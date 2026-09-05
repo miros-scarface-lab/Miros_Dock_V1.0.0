@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Miros Web Dock</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body class="light-mode">
+    <div class="background-canvas">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+        <div class="blob blob-3"></div>
+    </div>
+
+    <div class="root-container">
+        <!-- Top Navigation -->
+        <header class="top-bar">
+            <div class="bar-section left">
+                <button id="menuBtn" class="icon-btn">
+                    <span class="material-icons-round">menu</span>
+                </button>
+                <div class="brand">
+                    <div class="brand-logo">
+                        <span class="material-icons-round">cloud_queue</span>
+                    </div>
+                    <h1>Miros<span>Dock</span></h1>
+                </div>
+            </div>
+
+            <div class="bar-section center">
+                <div class="search-box">
+                    <label for="searchInput" class="hidden">Search files</label>
+                    <span class="material-icons-round">search</span>
+                    <input type="text" id="searchInput" placeholder="Search your files...">
+                </div>
+            </div>
+
+            <div class="bar-section right">
+                <button id="themeToggleBtn" class="icon-btn" title="Toggle Theme">
+                    <span class="material-icons-round" id="themeIcon">dark_mode</span>
+                </button>
+                <button id="viewToggleBtn" class="icon-btn" title="Switch View">
+                    <span class="material-icons-round">grid_view</span>
+                </button>
+                <button id="logoutBtn" class="icon-btn logout" title="Logout">
+                    <span class="material-icons-round">logout</span>
+                </button>
+            </div>
+        </header>
+
+        <div class="main-layout">
+            <!-- Navigation Sidebar -->
+            <aside class="side-nav" id="sidebar">
+                <div class="nav-group">
+                    <button class="nav-link active" data-type="all" onclick="loadContent(''); return false;">
+                        <span class="material-icons-round">grid_view</span>
+                        <span>My Drive</span>
+                    </button>
+                    <button class="nav-link" data-type="image" onclick="filterByType('image'); return false;">
+                        <span class="material-icons-round">image</span>
+                        <span>Images</span>
+                    </button>
+                    <button class="nav-link" data-type="video" onclick="filterByType('video'); return false;">
+                        <span class="material-icons-round">play_circle</span>
+                        <span>Videos</span>
+                    </button>
+                    <button class="nav-link" data-type="audio" onclick="filterByType('audio'); return false;">
+                        <span class="material-icons-round">audiotrack</span>
+                        <span>Audio</span>
+                    </button>
+                    <button class="nav-link" data-type="document" onclick="filterByType('document'); return false;">
+                        <span class="material-icons-round">description</span>
+                        <span>Documents</span>
+                    </button>
+                </div>
+
+                <div class="sidebar-footer">
+                    <div class="new-action-wrapper">
+                        <button class="fab-btn" id="newMenuBtn">
+                            <span class="material-icons-round">add</span>
+                            <span>Create New</span>
+                        </button>
+                        <div class="floating-menu hidden" id="newDropdown">
+                            <button id="uploadBtn">
+                                <span class="material-icons-round">upload_file</span>
+                                <span>Upload File</span>
+                            </button>
+                            <button id="uploadFolderBtn">
+                                <span class="material-icons-round">drive_folder_upload</span>
+                                <span>Upload Folder</span>
+                            </button>
+                            <div class="menu-divider"></div>
+                            <button id="newFolderBtn">
+                                <span class="material-icons-round">create_new_folder</span>
+                                <span>New Folder</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Main Content Area -->
+            <main class="content-viewport">
+                <div class="content-header">
+                    <div id="breadcrumb" class="breadcrumb-nav">
+                        <!-- Breadcrumbs injected here -->
+                    </div>
+                    <div class="status-indicators">
+                        <div id="uploadProgress" class="upload-status hidden">
+                            <div class="spinner"></div>
+                            <span class="progress-text">Uploading…</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="content" class="items-grid">
+                    <!-- Files injected here -->
+                    <div class="initial-loader">
+                        <div class="pulse-ring"></div>
+                        <span>Initializing Workspace...</span>
+                    </div>
+                </div>
+
+                <footer class="app-footer">
+                    <p>&copy; 2024 MirosDock | Created by <span>@Scarface Lab</span></p>
+                </footer>
+            </main>
+        </div>
+    </div>
+
+    <!-- Hidden Inputs -->
+    <input type="file" id="fileInput" multiple class="hidden">
+    <input type="file" id="folderInput" webkitdirectory mozdirectory class="hidden">
+
+    <!-- Overlays -->
+    <div id="playerOverlay" class="hidden glass-overlay">
+        <div class="viewer-card">
+            <button id="closePlayer" class="close-btn"><span class="material-icons-round">close</span></button>
+            <div id="imageViewer" class="hidden viewer-box">
+                <img id="lightboxImage" src="" alt="Preview">
+            </div>
+            <div id="videoViewer" class="hidden viewer-box">
+                <video id="videoPlayer" controls></video>
+            </div>
+            <div id="audioViewer" class="hidden viewer-box">
+                <div class="audio-visualizer">
+                    <span class="material-icons-round">music_note</span>
+                    <h3 id="audioTitle">Track Name</h3>
+                </div>
+                <audio id="audioPlayer" controls></audio>
+            </div>
+        </div>
+    </div>
+
+    <div id="actionModal" class="hidden glass-overlay">
+        <div class="action-card">
+            <div class="card-header">
+                <h2 id="modalTitle">File Options</h2>
+                <button id="closeModal" class="icon-btn"><span class="material-icons-round">close</span></button>
+            </div>
+            <div class="card-body">
+                <div id="modalPreview" class="mini-preview hidden"></div>
+                <div class="action-grid">
+                    <button id="actionOpen" class="action-tile">
+                        <span class="material-icons-round">visibility</span>
+                        <span>Preview</span>
+                    </button>
+                    <button id="actionDownload" class="action-tile">
+                        <span class="material-icons-round">download</span>
+                        <span>Download</span>
+                    </button>
+                    <button id="actionRename" class="action-tile">
+                        <span class="material-icons-round">edit</span>
+                        <span>Rename</span>
+                    </button>
+                    <button id="actionDelete" class="action-tile danger">
+                        <span class="material-icons-round">delete_outline</span>
+                        <span>Delete</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/js/app.js"></script>
+</body>
+</html>
